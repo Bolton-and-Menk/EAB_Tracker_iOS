@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="49e-Tb-3d3">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <scenes>
+        <!--Map-->
+        <scene sceneID="hNz-n2-bh7">
+            <objects>
+                <viewController id="9pv-A4-QxB" customClass="MapViewController" customModule="EAB_Tracker" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ia1-K6-d13"/>
+                        <viewControllerLayoutGuide type="bottom" id="4ug-Mw-9AY"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="tsR-hK-woN">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7lF-ed-48V" customClass="AGSMapView">
+                                <rect key="frame" x="0.0" y="20" width="320" height="528"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Wyh-Xi-xth">
+                                        <rect key="frame" x="191" y="55" width="103" height="28"/>
+                                    </stackView>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Hsy-2j-gbw">
+                                        <rect key="frame" x="191" y="55" width="103" height="29"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <segments>
+                                            <segment title="Street"/>
+                                            <segment title="Aerial"/>
+                                        </segments>
+                                        <connections>
+                                            <action selector="basemapChanged:" destination="9pv-A4-QxB" eventType="valueChanged" id="eMJ-FL-QLJ"/>
+                                        </connections>
+                                    </segmentedControl>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="Wyh-Xi-xth" secondAttribute="trailing" constant="26" id="4jk-Ij-Ftn"/>
+                                    <constraint firstItem="Wyh-Xi-xth" firstAttribute="bottom" secondItem="Hsy-2j-gbw" secondAttribute="bottom" id="W0F-82-jce"/>
+                                    <constraint firstItem="Wyh-Xi-xth" firstAttribute="top" secondItem="7lF-ed-48V" secondAttribute="top" constant="55" id="bnX-2o-aKG"/>
+                                    <constraint firstItem="Wyh-Xi-xth" firstAttribute="leading" secondItem="Hsy-2j-gbw" secondAttribute="leading" id="d0w-pq-xFo"/>
+                                    <constraint firstItem="Wyh-Xi-xth" firstAttribute="trailing" secondItem="Hsy-2j-gbw" secondAttribute="trailing" id="fvl-41-roy"/>
+                                    <constraint firstItem="Wyh-Xi-xth" firstAttribute="top" secondItem="Hsy-2j-gbw" secondAttribute="top" id="xii-ow-Qfh"/>
+                                </constraints>
+                            </view>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sys-5U-rDH">
+                                <rect key="frame" x="0.0" y="20" width="320" height="44"/>
+                                <items>
+                                    <barButtonItem width="78" style="plain" systemItem="fixedSpace" id="GXc-gd-gc9"/>
+                                    <barButtonItem title="Report Sighting" id="sMb-08-jZR">
+                                        <color key="tintColor" red="0.043194375932216644" green="0.029854476451873779" blue="0.091874562203884125" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </barButtonItem>
+                                    <barButtonItem width="71" style="plain" systemItem="fixedSpace" id="FOg-Ok-Svf"/>
+                                    <barButtonItem systemItem="add" id="hdE-s4-xhR">
+                                        <connections>
+                                            <action selector="takePhoto:" destination="9pv-A4-QxB" id="h50-j5-d9f"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="7lF-ed-48V" firstAttribute="leading" secondItem="sys-5U-rDH" secondAttribute="leading" id="AaL-OX-5RH"/>
+                            <constraint firstAttribute="bottom" secondItem="7lF-ed-48V" secondAttribute="bottom" constant="20" symbolic="YES" id="Cba-8a-xja"/>
+                            <constraint firstItem="7lF-ed-48V" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leading" id="HBN-to-Byt"/>
+                            <constraint firstItem="7lF-ed-48V" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" id="MTt-g9-Kie"/>
+                            <constraint firstItem="7lF-ed-48V" firstAttribute="top" secondItem="sys-5U-rDH" secondAttribute="top" id="Qja-h5-XSi"/>
+                            <constraint firstItem="7lF-ed-48V" firstAttribute="trailing" secondItem="sys-5U-rDH" secondAttribute="trailing" id="TIc-dM-pdW"/>
+                            <constraint firstAttribute="trailing" secondItem="7lF-ed-48V" secondAttribute="trailing" id="htD-Qx-UcH"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Map" image="first" id="acW-dT-cKf"/>
+                    <connections>
+                        <outlet property="addSightingLabel" destination="sMb-08-jZR" id="hps-IP-Hoh"/>
+                        <outlet property="bannerView" destination="sys-5U-rDH" id="Kjp-7X-W3r"/>
+                        <outlet property="mapView" destination="7lF-ed-48V" id="S1c-aQ-wew"/>
+                        <outlet property="pickTemplateButton" destination="hdE-s4-xhR" id="Jba-cQ-3p1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="W5J-7L-Pyd" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="400" y="-279"/>
+        </scene>
+        <!--Template Picker-->
+        <scene sceneID="wg7-f3-ORb">
+            <objects>
+                <viewController storyboardIdentifier="FeatureTemplatePickerController" title="Template Picker" id="8rJ-Kc-sve" customClass="FeatureTemplatePickerController" customModule="EAB_Tracker" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="L7p-HK-0SC"/>
+                        <viewControllerLayoutGuide type="bottom" id="Djb-ko-YwX"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="QS5-Rx-YEW">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lu7-d2-owl">
+                                <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="8rJ-Kc-sve" id="VIS-sg-aNF"/>
+                                    <outlet property="delegate" destination="8rJ-Kc-sve" id="xlS-0g-TZo"/>
+                                </connections>
+                            </tableView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0Hp-5P-ANh">
+                                <rect key="frame" x="0.0" y="20" width="320" height="44"/>
+                                <items>
+                                    <barButtonItem title="Cancel" id="ssY-UL-6w7">
+                                        <connections>
+                                            <action selector="dismiss" destination="8rJ-Kc-sve" id="6Nr-nT-PUK"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="0Hp-5P-ANh" firstAttribute="leading" secondItem="QS5-Rx-YEW" secondAttribute="leading" id="1GK-e9-zkI"/>
+                            <constraint firstItem="lu7-d2-owl" firstAttribute="bottom" secondItem="Djb-ko-YwX" secondAttribute="top" id="3jw-QP-pwx"/>
+                            <constraint firstItem="0Hp-5P-ANh" firstAttribute="bottom" secondItem="lu7-d2-owl" secondAttribute="top" id="5iT-Lu-git"/>
+                            <constraint firstItem="0Hp-5P-ANh" firstAttribute="top" secondItem="L7p-HK-0SC" secondAttribute="bottom" id="S5A-ve-4Iw"/>
+                            <constraint firstItem="0Hp-5P-ANh" firstAttribute="centerX" secondItem="QS5-Rx-YEW" secondAttribute="centerX" id="Scf-Pr-1O7"/>
+                            <constraint firstItem="0Hp-5P-ANh" firstAttribute="trailing" secondItem="lu7-d2-owl" secondAttribute="trailing" id="edH-Uz-OcD"/>
+                            <constraint firstItem="0Hp-5P-ANh" firstAttribute="leading" secondItem="lu7-d2-owl" secondAttribute="leading" id="uyN-Bm-3hy"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Report Sighting" image="second" id="cPa-gy-q4n"/>
+                    <connections>
+                        <outlet property="featureTemplateTableView" destination="lu7-d2-owl" id="qG0-gH-r1F"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="400" y="340"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="yl2-sM-qoP">
+            <objects>
+                <tabBarController id="49e-Tb-3d3" sceneMemberID="viewController">
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="W28-zg-YXA">
+                        <rect key="frame" x="0.0" y="975" width="768" height="49"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="9pv-A4-QxB" kind="relationship" relationship="viewControllers" id="u7Y-xg-7CH"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HuB-VB-40B" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="0.0" y="0.0"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="first" width="30" height="30"/>
+        <image name="second" width="30" height="30"/>
+    </resources>
+</document>
