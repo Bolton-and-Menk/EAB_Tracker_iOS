@@ -113,7 +113,8 @@ class FeatureTemplatePickerController: UIViewController, UITableViewDelegate, UI
         let info = self.infos[indexPath.row]
         
         cell.textLabel?.text = info.featureTemplate.name
-        //cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.lineBreakMode = NSLineBreakMode.ByWordWrapping
         cell.imageView?.image = info.featureLayer.renderer.swatchForFeatureWithAttributes(info.featureTemplate.prototypeAttributes, geometryType: info.featureLayer.geometryType, size: CGSizeMake(20, 20))
         
         return cell

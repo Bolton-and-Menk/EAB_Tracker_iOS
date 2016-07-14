@@ -9,6 +9,7 @@
 import UIKit
 import Foundation
 import ArcGIS
+import MessageUI
 
 let kBasemapLayerName = "Basemap"
 var isAdmin = true
@@ -19,7 +20,7 @@ let baseUrl = "https://maps.googleapis.com/maps/api/geocode/json?"
 let kGeoLocatorURL = "http://gis.hennepin.us/arcgis/rest/services/Locators/HC_COMPOSITE/GeocodeServer"
 let aerialURL = "http://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer"
 
-class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate, AGSMapViewTouchDelegate, AGSPopupsContainerDelegate, FeatureTemplateDelegate, AGSFeatureLayerQueryDelegate, AGSLocatorDelegate, AGSAttachmentManagerDelegate, AGSFeatureLayerEditingDelegate, AGSMapViewLayerDelegate, UIImagePickerControllerDelegate,
+class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate, AGSMapViewTouchDelegate, AGSPopupsContainerDelegate, FeatureTemplateDelegate, AGSFeatureLayerQueryDelegate, AGSLocatorDelegate, AGSAttachmentManagerDelegate, AGSFeatureLayerEditingDelegate, AGSMapViewLayerDelegate, UIImagePickerControllerDelegate, MFMailComposeViewControllerDelegate,
     UINavigationControllerDelegate {
     
     // map
@@ -144,11 +145,6 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
     // AGSFeatureLayerEditingDelegate methods
     func featureLayer(featureLayer: AGSFeatureLayer!, operation op: NSOperation!, didFeatureEditsWithResults editResults: AGSFeatureLayerEditResults!) {
         
-        
-        //We will assume we have to update the attachments unless
-        //1) We were adding a feature and it failed
-        //2) We were updating a feature and it failed
-        //3) We were deleting a feature
         var updateAttachments = true
         
         if editResults.addResults != nil && editResults.addResults.count > 0 {
@@ -206,7 +202,9 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
                 attMgr.addAttachmentWithData(imgData, name: img, contentType: "image/png")
                 print("added attachment \(img) for ID \(oid)")
             }*/
-            self.collectedImages.removeAll()
+            
+            // ORIGINALLY DELETING HERE, REMOVE IF DELETING AFTER SENDING AS EMAIL ATTACHMENTS
+            //self.collectedImages.removeAll()
             
             print("count of attachments \(attMgr.attachments.count), \(attMgr.hasLocalEdits()) ")
             if attMgr.hasLocalEdits() {
@@ -230,6 +228,16 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
         }
         else {
             print("delegate: added attachment successfully")
+        }
+        
+        // send email to arrest the pest
+        let msg = "new sighting"
+        let subj = "new sighting in county"
+        let mailComposeViewController = configuredMailComposeViewController(msg, subject: subj)
+        if MFMailComposeViewController.canSendMail() {
+            self.presentViewController(mailComposeViewController, animated: true, completion: nil)
+        } else {
+            self.showSendMailErrorAlert()
         }
     }
     
@@ -271,7 +279,6 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if keyPath == "location" {
             self.location = self.mapView.locationDisplay.location
-            //print("got location: \(self.location)")
             
         }
     }
@@ -296,7 +303,7 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
         self.newSighting.setAttribute(address, forKey: "Site_Address")
         self.newSighting.geometry = newPoint
         
-        print(self.newSighting)
+        // add it as a graphic
         self.sightings.addGraphic(self.newSighting)
         
         // get attachment manager for this feature
@@ -311,11 +318,8 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
         attMgr = nil
         
         // Iniitalize popup view controller
-        print("popupVC is nil, \(popupVC==nil)")
-        //if (self.popupVC == nil) {
         self.popupVC = AGSPopupsContainerViewController(webMap: self.webMap, forFeature: self.newSighting, usingNavigationControllerStack: false)
         self.popupVC.delegate = self
-        //}
         
         
         //Only for iPad, set presentation style to Form sheet
@@ -410,7 +414,7 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
                 //For iphone, display summary info in the callout
                 self.mapView.callout.title = "\(self.popupVC.popups.count) Results"
                 self.mapView.callout.accessoryButtonHidden = false
-                self.mapView.callout.detail = "loading more..."
+                self.mapView.callout.detail = "view details..."
                 self.mapView.callout.customView = nil
             }
             
@@ -458,7 +462,7 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
         }
     }
     
-    // finishh editing popup
+    // finish editing popup
     func popupsContainer(popupsContainer: AGSPopupsContainer!, didFinishEditingForPopup popup: AGSPopup!) {
         // simplify the geometry, this will take care of self intersecting polygons and
         popup.graphic.geometry = AGSGeometryEngine.defaultGeometryEngine().simplifyGeometry(popup.graphic.geometry)
@@ -472,21 +476,21 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
             //and we simply update the exisiting feature
             print("updating feature with OID \(oid)")
             popup.featureLayer.updateFeatures([popup.graphic])
+            
         }
         else {
             //objectid does not exist, this means we need to add it as a new feature
             popup.featureLayer.addFeatures([popup.graphic])
             //popup.featureLayer.applyEditsWithFeaturesToAdd([popup.graphic], toUpdate: nil, toDelete: nil)
             
-            // stop listening for location observer
-            //unregisterLocation()
             
             // query counties to see if there is a new sighting within
             if (popup.featureLayer.name == "EAB Sighting") {
                 queryCounties()
-                print("finished query")
             }
+            
         }
+        
         /*
         // clear graphics for new sighting
         if self.newSighting != nil {
@@ -574,25 +578,22 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
     //
     // update counties if a new layer is found
     func queryCounties(){
-        print("called queryCounties()")
         let query = AGSQuery()
         query.whereClause = "1=1"
         query.outFields = ["*"]
         query.geometry = self.newSighting.geometry
         
         self.counties.queryFeatures(query)
-        print("did query...")
     }
 
     
     // AGSFeatureLayerQueryDelegate
     func featureLayer(featureLayer: AGSFeatureLayer!, operation op: NSOperation!, didQueryFeaturesWithFeatureSet featureSet: AGSFeatureSet!) {
-        print("Query feature count : \(featureSet.features.count)")
+        
         if (featureSet.features.count > 0) {
              var needToChange = false
              for feature in featureSet.features {
                  let status = feature.attributeAsStringForKey("QUARANTINED")
-                 print("status: \(status)")
                  if (status != "Currently Quarantined" && status != "Possible EAB Present") {
                      feature.setAttributeWithString("Possible EAB Present", forKey: "QUARANTINED")
                      needToChange = true
@@ -662,17 +663,7 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
         
         alertController.addAction(photoLibraryAction)
         
-        /*
-        let doneAction = UIAlertAction(title: "Done", style: .Default)  {
-            (action) in
-            
-            // dismiss view controller and convert images
-            self.dismissViewControllerAnimated(true, completion: nil)
-            
-        }
-        alertController.addAction(doneAction)
-        */
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { //, handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) {
             (action) in
             self.collectedImages.removeAll()
             self.dismissViewControllerAnimated(true, completion: nil)
@@ -703,7 +694,7 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
     // MARK: store image after user selected one
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         if let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
-            let imageData: NSData = UIImageJPEGRepresentation(pickedImage, 1.0)!
+            let imageData: NSData = UIImageJPEGRepresentation(pickedImage, 0.75)!
             let date = NSDate()
             let formatter = NSDateFormatter()
             formatter.dateFormat = "'IMG_'yyyyMMddHHmmss'.jpg'"
@@ -724,6 +715,35 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
     func imagePickerControllerDidCancel(picker: UIImagePickerController) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    
+    // MARK: email functionality
+    func configuredMailComposeViewController(message: String, subject: String) -> MFMailComposeViewController {
+        let mailComposerVC = MFMailComposeViewController()
+        mailComposerVC.mailComposeDelegate = self // Extremely important to set the --mailComposeDelegate-- property, NOT the --delegate-- property
+        
+        mailComposerVC.setToRecipients(["caleb.mackey@gmail.com"])
+        mailComposerVC.setSubject(subject)
+        mailComposerVC.setMessageBody(message, isHTML: false)
+        for (img, imgData) in self.collectedImages {
+            mailComposerVC.addAttachmentData(imgData, mimeType: "image/jpg", fileName: img)
+        }
+        
+        return mailComposerVC
+    }
+    
+    func showSendMailErrorAlert() {
+        let sendMailErrorAlert = UIAlertController(title: "Could Not Send Email", message: "Your device could not send e-mail.  Please check e-mail configuration and try again.", preferredStyle: .Alert)
+        presentViewController(sendMailErrorAlert, animated: true, completion: nil)
+    }
+    
+    // MARK: MFMailComposeViewControllerDelegate Method
+    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
+        controller.dismissViewControllerAnimated(true, completion: nil)
+        print("email sucessfully sent")
+        self.collectedImages.removeAll()
+    }
+
     
 }
 

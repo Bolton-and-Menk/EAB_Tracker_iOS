@@ -14,6 +14,9 @@
 		DE7B6BD71C6156D4002B43DC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DE7B6BD51C6156D4002B43DC /* Main.storyboard */; };
 		DE7B6BD91C6156D4002B43DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DE7B6BD81C6156D4002B43DC /* Assets.xcassets */; };
 		DE7B6BDC1C6156D4002B43DC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DE7B6BDA1C6156D4002B43DC /* LaunchScreen.storyboard */; };
+		DE7EADAA1D2F503C008D1EC0 /* EmailHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE7EADA91D2F503C008D1EC0 /* EmailHelper.swift */; };
+		DE893AC51CE4139C00CA9999 /* EABInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE893AC41CE4139C00CA9999 /* EABInfo.swift */; };
+		DEBDF8821D10EEF6009C786B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DEBDF8811D10EEF6009C786B /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +31,9 @@
 		DE7B6BD81C6156D4002B43DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DE7B6BDB1C6156D4002B43DC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DE7B6BDD1C6156D4002B43DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DE7EADA91D2F503C008D1EC0 /* EmailHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailHelper.swift; sourceTree = "<group>"; };
+		DE893AC41CE4139C00CA9999 /* EABInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EABInfo.swift; sourceTree = "<group>"; };
+		DEBDF8811D10EEF6009C786B /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +93,9 @@
 				DE7B6BD81C6156D4002B43DC /* Assets.xcassets */,
 				DE7B6BDA1C6156D4002B43DC /* LaunchScreen.storyboard */,
 				DE7B6BDD1C6156D4002B43DC /* Info.plist */,
+				DE893AC41CE4139C00CA9999 /* EABInfo.swift */,
+				DEBDF8811D10EEF6009C786B /* Localizable.strings */,
+				DE7EADA91D2F503C008D1EC0 /* EmailHelper.swift */,
 			);
 			path = EAB_Tracker;
 			sourceTree = "<group>";
@@ -159,6 +168,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE7B6BDC1C6156D4002B43DC /* LaunchScreen.storyboard in Resources */,
+				DEBDF8821D10EEF6009C786B /* Localizable.strings in Resources */,
 				DE7B6BD91C6156D4002B43DC /* Assets.xcassets in Resources */,
 				DE7B6BD71C6156D4002B43DC /* Main.storyboard in Resources */,
 			);
@@ -219,9 +229,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE893AC51CE4139C00CA9999 /* EABInfo.swift in Sources */,
 				DE7B6BD41C6156D4002B43DC /* FeatureTemplatePickerControl.swift in Sources */,
 				DE7B6BD01C6156D4002B43DC /* AppDelegate.swift in Sources */,
 				DE7B6BD21C6156D4002B43DC /* MapViewController.swift in Sources */,
+				DE7EADAA1D2F503C008D1EC0 /* EmailHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
