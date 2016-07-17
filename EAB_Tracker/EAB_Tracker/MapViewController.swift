@@ -694,7 +694,7 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
     // MARK: store image after user selected one
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         if let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
-            let imageData: NSData = UIImageJPEGRepresentation(pickedImage, 0.75)!
+            let imageData: NSData = UIImageJPEGRepresentation(pickedImage, 0.25)! //change to .75 before release
             let date = NSDate()
             let formatter = NSDateFormatter()
             formatter.dateFormat = "'IMG_'yyyyMMddHHmmss'.jpg'"
@@ -725,9 +725,19 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
         mailComposerVC.setToRecipients(["caleb.mackey@gmail.com"])
         mailComposerVC.setSubject(subject)
         mailComposerVC.setMessageBody(message, isHTML: false)
+        
+        var totalSize = 0
+        for imgData in self.collectedImages.values{
+            totalSize += imgData.length
+        }
         for (img, imgData) in self.collectedImages {
+            /*
+            if (imgData.length > 4096  && self.collectedImages.count){
+                // reduce file size
+            }*/
             mailComposerVC.addAttachmentData(imgData, mimeType: "image/jpg", fileName: img)
         }
+        print("Total size: \(totalSize)")
         
         return mailComposerVC
     }
