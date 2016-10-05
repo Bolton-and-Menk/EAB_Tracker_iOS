@@ -10,9 +10,10 @@ import UIKit
 import Foundation
 import ArcGIS
 import MessageUI
+import LocalAuthentication
 
 let kBasemapLayerName = "Basemap"
-var isAdmin = true
+var isAdmin = false
 var isAdminJson = String(isAdmin)
 
 //The geocode service
@@ -53,6 +54,7 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
     var collectedImages: [String:NSData] = [:]
     
     // UI vars
+    @IBOutlet weak var loginButton: UIBarButtonItem!
     @IBOutlet weak var bannerView: UIToolbar!
     @IBOutlet weak var addSightingLabel: UIBarButtonItem!
     @IBOutlet weak var pickTemplateButton: UIBarButtonItem!
@@ -77,6 +79,17 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
         self.featureTemplatePickerController = storyboard.instantiateViewControllerWithIdentifier("FeatureTemplatePickerController") as! FeatureTemplatePickerController
         self.featureTemplatePickerController.delegate = self
         
+    }
+    
+    @IBAction func launchLogin(sender: AnyObject) {
+        if !isAdmin {
+            Login()
+        } else {
+            isAdmin = false
+            dispatch_async(dispatch_get_main_queue(), {
+                self.loginButton.title = "Login"
+            })
+        }
     }
     
     //****************************************************************************************
@@ -210,7 +223,28 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
             if attMgr.hasLocalEdits() {
                 attMgr.postLocalEditsToServer()
                 print("posted local edits")
+                self.dismissViewControllerAnimated(true, completion:nil)
+                self.popupVC = nil
                 
+                // send email to arrest the pest
+                let msg = "new sighting"
+                /*
+                do {
+                    let msg1 = try NSJSONSerialization.dataWithJSONObject(self.popupVC.currentPopup.graphic.allAttributes(), options: NSJSONWritingOptions.PrettyPrinted)
+                    // here "jsonData" is the dictionary encoded in JSON data
+                } catch let error as NSError {
+                    print(error)
+                }
+ */
+                let subj = "new sighting in county"
+                let mailComposeViewController = configuredMailComposeViewController(msg, subject: subj)
+                if MFMailComposeViewController.canSendMail() {
+                    self.presentViewController(mailComposeViewController, animated: true, completion: nil)
+                } else {
+                    self.showSendMailErrorAlert()
+                }
+
+                // end email
             }
         }
     }
@@ -229,7 +263,7 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
         else {
             print("delegate: added attachment successfully")
         }
-        
+        /*
         // send email to arrest the pest
         let msg = "new sighting"
         let subj = "new sighting in county"
@@ -239,6 +273,7 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
         } else {
             self.showSendMailErrorAlert()
         }
+        */
     }
     
     
@@ -623,6 +658,7 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
     //
     // present feature template picker
     func presentFeatureTemplatePicker() {
+        
         self.featureTemplatePickerController.modalPresentationStyle = .FormSheet
         
         self.presentViewController(self.featureTemplatePickerController, animated: true, completion: nil)
@@ -752,6 +788,120 @@ class MapViewController: UIViewController, AGSWebMapDelegate, AGSCalloutDelegate
         controller.dismissViewControllerAnimated(true, completion: nil)
         print("email sucessfully sent")
         self.collectedImages.removeAll()
+    }
+    
+    // MARK: Authentication
+    
+    func auth_wrapper(usr: String, pw: String, handleFailure: Bool = true) -> Void {
+        authenticate(usr, pw: pw)
+        if isAdmin {
+            dispatch_async(dispatch_get_main_queue(), {
+                self.loginButton.title = "Logout"
+            })
+        }
+        if !isAdmin && handleFailure {
+            let errorAlert = UIAlertController(title: "Authentication Error", message: "Authentication Failed, please try again", preferredStyle: .Alert)
+            let okAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
+            errorAlert.addAction(okAction)
+            self.presentViewController(errorAlert, animated: true, completion: nil)
+        }
+    }
+    func Login() -> Void {
+        let context = LAContext()
+        var error: NSError?
+        let reason = "Authentication is required to edit data, please use Touch ID now"
+        
+        if context.canEvaluatePolicy(LAPolicy.DeviceOwnerAuthenticationWithBiometrics, error: &error) && hasLoginKey {
+            context.evaluatePolicy(LAPolicy.DeviceOwnerAuthenticationWithBiometrics, localizedReason: reason, reply: { (success, policyError) in
+                if success {
+                    print("touch ID successful")
+                    // grab username and password from NSUserDefaults and Keychain
+                    if let storedUsername = NSUserDefaults.standardUserDefaults().valueForKey("username") as? String {
+                        
+                        if let password = keychainWrapper.myObjectForKey("v_Data") as? String {
+                            self.auth_wrapper(storedUsername, pw: password, handleFailure: false)
+                            
+                        }
+                    }
+                    
+                }
+                else {
+                    
+                    switch policyError!.code {
+                    case LAError.SystemCancel.rawValue:
+                        print("touch ID error: system cancelled")
+                    case LAError.UserCancel.rawValue:
+                        print("touch ID error: user cancelled")
+                    case LAError.UserFallback.rawValue:
+                        self.showPasswordAlert()
+                    default:
+                        NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                            let message = "Touch ID Authentication failed, please login with username and password"
+                            let errorAlert = UIAlertController(title: "Touch ID Error", message: message, preferredStyle: .Alert)
+                            let okAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
+                            errorAlert.addAction(okAction)
+                            self.presentViewController(errorAlert, animated: true, completion: nil)
+                        
+                        })
+                    }
+                }
+            })
+        } else {
+            
+            self.showPasswordAlert()
+        }
+        
+    }
+    
+    func showPasswordAlert() -> Void {
+        print("should be displaying password alert")
+        
+        let pwAlert = UIAlertController(title: "EAB Tracker Authentication", message: "Please enter your username password", preferredStyle: .Alert)
+        let defaultAction = UIAlertAction(title: "OK", style: .Default) { (action) in
+            if let usrField = pwAlert.textFields?[0] as UITextField? {
+                if let pwField = pwAlert.textFields?[1] as UITextField? {
+                    let storedUsername = usrField.text
+                    let password = pwField.text
+                    self.auth_wrapper(storedUsername!, pw: password!)
+                    if hasLoginKey == false && isAdmin {
+                        NSUserDefaults.standardUserDefaults().setValue(storedUsername, forKey: "username")
+                        
+                        // write password to keychain and synchronize user defaults
+                        keychainWrapper.mySetObject(password, forKey:kSecValueData)
+                        keychainWrapper.writeToKeychain()
+                        NSUserDefaults.standardUserDefaults().setBool(true, forKey: "hasLoginKey")
+                        NSUserDefaults.standardUserDefaults().synchronize()
+                    }
+                    
+                }
+            }
+        }
+        var hasUsername = false
+        pwAlert.addAction(defaultAction)
+        pwAlert.addTextFieldWithConfigurationHandler { (usrField) -> Void in
+            if let storedUsername = NSUserDefaults.standardUserDefaults().valueForKey("username") as? String {
+                usrField.text = storedUsername as String
+                hasUsername = true
+                print("set has username to \(hasUsername)")
+            } else {
+                usrField.placeholder = "username"
+                usrField.becomeFirstResponder()
+            }
+            
+        }
+        print("hasusername outside of scope: \(hasUsername)")
+        pwAlert.addTextFieldWithConfigurationHandler { (pwField) -> Void in
+            pwField.placeholder = "password"
+            pwField.secureTextEntry = true
+            if hasUsername {
+                pwField.becomeFirstResponder()
+            }
+            
+            
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        pwAlert.addAction(cancel)
+        self.presentViewController(pwAlert, animated: true, completion: nil)
     }
 
     

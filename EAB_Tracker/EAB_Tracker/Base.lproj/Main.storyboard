@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="49e-Tb-3d3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="49e-Tb-3d3">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -48,11 +48,16 @@
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sys-5U-rDH">
                                 <rect key="frame" x="0.0" y="20" width="320" height="44"/>
                                 <items>
-                                    <barButtonItem width="78" style="plain" systemItem="fixedSpace" id="GXc-gd-gc9"/>
+                                    <barButtonItem title="Login" id="3Wx-46-5aD">
+                                        <connections>
+                                            <action selector="launchLogin:" destination="9pv-A4-QxB" id="wbE-Sn-oaT"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="0T6-ri-GRE"/>
                                     <barButtonItem title="Report Sighting" id="sMb-08-jZR">
                                         <color key="tintColor" red="0.043194375932216644" green="0.029854476451873779" blue="0.091874562203884125" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </barButtonItem>
-                                    <barButtonItem width="71" style="plain" systemItem="fixedSpace" id="FOg-Ok-Svf"/>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="zcj-Hp-cAA"/>
                                     <barButtonItem systemItem="add" id="hdE-s4-xhR">
                                         <connections>
                                             <action selector="takePhoto:" destination="9pv-A4-QxB" id="h50-j5-d9f"/>
@@ -75,7 +80,8 @@
                     <tabBarItem key="tabBarItem" title="Map" image="first" id="acW-dT-cKf"/>
                     <connections>
                         <outlet property="addSightingLabel" destination="sMb-08-jZR" id="hps-IP-Hoh"/>
-                        <outlet property="bannerView" destination="sys-5U-rDH" id="Kjp-7X-W3r"/>
+                        <outlet property="bannerView" destination="sys-5U-rDH" id="6Wz-WD-Zp8"/>
+                        <outlet property="loginButton" destination="3Wx-46-5aD" id="pPA-1S-JwQ"/>
                         <outlet property="mapView" destination="7lF-ed-48V" id="S1c-aQ-wew"/>
                         <outlet property="pickTemplateButton" destination="hdE-s4-xhR" id="Jba-cQ-3p1"/>
                     </connections>
@@ -118,7 +124,7 @@
                                 <rect key="frame" x="100" y="31" width="81" height="21"/>
                                 <accessibility key="accessibilityConfiguration" label="Visual Cue"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>

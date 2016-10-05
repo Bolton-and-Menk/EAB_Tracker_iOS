@@ -1,10 +1,13 @@
 PODS:
   - ArcGIS-Runtime-SDK-iOS (10.2.4)
+  - SQLite.swift (0.10.1)
 
 DEPENDENCIES:
   - ArcGIS-Runtime-SDK-iOS (= 10.2.4)
+  - SQLite.swift (~> 0.10.1)
 
 SPEC CHECKSUMS:
   ArcGIS-Runtime-SDK-iOS: 72a0bb049c2a151c8a23f46762db08266957006e
+  SQLite.swift: 6a6e4b034efc317ce4e203b6af2d3024fee2b570
 
 COCOAPODS: 0.39.0
